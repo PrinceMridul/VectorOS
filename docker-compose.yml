@@ -1,0 +1,58 @@
+name: vectoros
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: vectoros
+      POSTGRES_PASSWORD: vectoros
+      POSTGRES_DB: vectoros
+    ports:
+      - "5432:5432"
+    volumes:
+      - vectoros_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vectoros -d vectoros"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api:
+    build:
+      context: ./backend
+    environment:
+      VECTOROS_DATABASE_URL: postgresql+asyncpg://vectoros:vectoros@db:5432/vectoros
+      VECTOROS_ENV: ${VECTOROS_ENV:-development}
+      VECTOROS_SECRET_KEY: ${VECTOROS_SECRET_KEY:-dev-secret-change-me}
+      VECTOROS_LLM_PROVIDER: ${VECTOROS_LLM_PROVIDER:-mock}
+      VECTOROS_CORS_ORIGINS: http://localhost:3000
+      # So `docker compose up` produces a working tutor, not an empty catalogue.
+      VECTOROS_AUTO_SEED: "true"
+      GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    develop:
+      watch:
+        - action: sync
+          path: ./backend/app
+          target: /app/app
+
+  web:
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:8000
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - api
+
+volumes:
+  vectoros_pgdata:

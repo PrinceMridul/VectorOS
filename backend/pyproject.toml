@@ -1,0 +1,75 @@
+[project]
+name = "vectoros"
+version = "0.1.0"
+description = "VectorOS — an AI-native learning operating system. Learn by thinking."
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "pydantic>=2.9",
+    "pydantic-settings>=2.6",
+    "sqlalchemy>=2.0.36",
+    "greenlet>=3.1",
+    "aiosqlite>=0.20",
+    "asyncpg>=0.30",
+    "pgvector>=0.3.6",
+    "httpx>=0.27",
+    "python-jose[cryptography]>=3.3",
+    "langgraph>=0.2.50",
+    "structlog>=24.4",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "ruff>=0.8",
+    "mypy>=1.13",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "UP", "B", "SIM", "RUF", "BLE"]
+ignore = [
+    "B008",    # FastAPI Depends() in defaults is the framework's idiom
+    "RUF012",  # ClassVar annotations on Pydantic/SQLAlchemy attrs are noise here
+    # Learner-facing copy and pedagogy docs use real typography (en/em dashes,
+    # ×, ≥). That is deliberate: this product ships prose, and prose written with
+    # hyphens where dashes belong reads like software output.
+    "RUF001",
+    "RUF002",
+    "RUF003",
+    # NotFound / Unauthorized / PedagogicalViolation read correctly at call sites
+    # (`raise PedagogicalViolation(...)`); an `Error` suffix would add nothing.
+    "N818",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Authored curriculum prose: expert models and challenges are paragraphs, and
+# rewrapping them to 100 columns makes the content harder to edit, not easier.
+"app/db/seed_data.py" = ["E501"]
+# Agent contracts are long prose blocks for the same reason.
+"app/agents/prompts.py" = ["E501"]
+
+[tool.mypy]
+python_version = "3.11"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+disallow_untyped_defs = true
+warn_unused_ignores = false
+exclude = ["tests/"]
