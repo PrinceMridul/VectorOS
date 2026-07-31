@@ -7,7 +7,6 @@ import * as React from "react";
 
 import { VectorField } from "@/features/landing/vector-field";
 import { AppFooter } from "@/components/app-footer";
-import { CreatorSignature } from "@/components/creator-signature";
 import { Button } from "@/components/ui/button";
 import { ease, riseIn, stagger } from "@/lib/motion";
 import { useLearner } from "@/stores/learner";
@@ -61,21 +60,20 @@ export function LandingPage() {
         transition={{ duration: 0.5, ease: ease.out }}
         className="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-6 py-6"
       >
+        {/* The creator signature used to live here, beside the wordmark. Removed:
+            opening the About modal from a header trigger competed visually with
+            the hero and the modal itself, and the footer already carries the
+            same attribution and opens the same modal — see AppFooter. */}
         <div className="flex items-center gap-2.5">
           <Mark />
           <span className="text-[15px] font-medium tracking-tight">VectorOS</span>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:block">
-            <CreatorSignature />
-          </div>
-          <Link
-            href={destination}
-            className="rounded-md px-2 py-1 text-[13px] text-muted transition-colors hover:text-ink focus-ring"
-          >
-            {returning ? "Continue" : "Begin"}
-          </Link>
-        </div>
+        <Link
+          href={destination}
+          className="rounded-md px-2 py-1 text-[13px] text-muted transition-colors hover:text-ink focus-ring"
+        >
+          {returning ? "Continue" : "Begin"}
+        </Link>
       </motion.header>
 
       {/* Hero */}

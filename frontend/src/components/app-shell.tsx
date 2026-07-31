@@ -89,17 +89,23 @@ export function AppShell({
             })}
           </nav>
 
-          <div className="ml-auto flex items-center gap-4">
-            {right}
+          <div className="ml-auto flex min-w-0 items-center gap-4">
             {/* Attribution lives in existing chrome rather than floating over
-                the canvas — see CreatorSignature for why. Hidden below `md` so
-                it never competes with the nav on a phone. */}
-            <div className="hidden md:block">
-              <CreatorSignature />
+                the canvas — see CreatorSignature for why. It is the only item
+                here allowed to shrink: page actions and the learner's own name
+                must stay legible, so the attribution truncates first. */}
+            <div className="hidden min-w-0 md:block">
+              <CreatorSignature className="block max-w-full truncate" />
             </div>
-            {user && (
-              <span className="hidden text-[13px] text-faint sm:block">{user.display_name}</span>
-            )}
+            {/* Hairline so the attribution and the page actions read as two
+                groups rather than one run of similar-weight text. */}
+            <span aria-hidden className="hidden h-3.5 w-px shrink-0 bg-line md:block" />
+            <div className="flex shrink-0 items-center gap-4">
+              {right}
+              {user && (
+                <span className="hidden text-[13px] text-faint sm:block">{user.display_name}</span>
+              )}
+            </div>
           </div>
         </div>
       </header>

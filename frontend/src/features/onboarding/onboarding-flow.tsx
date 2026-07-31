@@ -128,11 +128,15 @@ export function OnboardingFlow() {
           <ArrowLeft className="h-3.5 w-3.5" />
           Back
         </button>
-        <div className="flex items-center gap-4">
-          <div className="hidden sm:block">
-            <CreatorSignature />
+        {/* Same rule as the other two headers: the attribution is the only
+            shrinkable item, and the progress indicator never compresses. */}
+        <div className="flex min-w-0 items-center gap-4">
+          <div className="hidden min-w-0 md:block">
+            <CreatorSignature className="block max-w-full truncate" />
           </div>
-          <StepDots step={step} />
+          <div className="shrink-0">
+            <StepDots step={step} />
+          </div>
         </div>
       </header>
 
